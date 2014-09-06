@@ -217,6 +217,7 @@ public class Shape3 {
 		double minT = Double.MAX_VALUE;
 		Plane keyPlane = null;
 		for(Plane p : sides) {
+			// t is the distance from the intersecting point to the p
 			double t = (p.constant-p.normal.x*interPoint.x-p.normal.y*interPoint.y-p.normal.z*interPoint.z)/(p.normal.x*vel.x+p.normal.y*vel.y+p.normal.z*vel.z);
 			double planeX = interPoint.x+vel.x*t, planeY = interPoint.y+vel.y*t, planeZ = interPoint.z+vel.z*t;
 			if(p.contains(new Point3(planeX, planeY, planeZ))) {
@@ -226,20 +227,21 @@ public class Shape3 {
 				}
 			}
 		}
+		// if we are inside on an object, keyPlane will get set. This will find the anti-direction vector of this Shape3 and change the velocity of the colliding objects along that vector
 		if(keyPlane != null) {
-			double scalar = (keyPlane.normal.x*vel.x+keyPlane.normal.y*vel.y+keyPlane.normal.z*vel.z)/(Math.pow(Point3.getMagnitude(keyPlane.normal), 2.0));
+			double scalar = (keyPlane.normal.x*vel.x+keyPlane.normal.y*vel.y+keyPlane.normal.z*vel.z);
 			Point3 v = Point3.getScalarMultiple(scalar, keyPlane.normal);
 			Point3 v1 = Point3.getScalarMultiple(s.mass/mass, v);
 			Point3 v2 = Point3.getScalarMultiple(mass/s.mass, v);
-			vel = Point3.getScalarMultiple(elasticity, new Point3(vel.x-v1.x, vel.y-v1.y, vel.z-v1.z)); 
-			s.vel = Point3.getScalarMultiple(s.elasticity, new Point3(s.vel.x+v2.x, s.vel.y+v2.y, s.vel.z+v2.z));
+			vel = Point3.getScalarMultiple(elasticity, new Point3(vel.x-v1.x, vel.y-v1.y, vel.z-v1.z));
+			vel = new Point3(Math.abs(vel.x) <= 1 ? 0 : vel.x, Math.abs(vel.y) <= 1 ? 0 : vel.y, Math.abs(vel.z) <= 1 ? 0 : vel.z);
+			s.vel = Point3.getScalarMultiple(s.elasticity, new Point3(s.vel.x-v2.x, s.vel.y-v2.y, s.vel.z-v2.z));
+			s.vel = new Point3(Math.abs(s.vel.x) <= 1 ? 0 : s.vel.x, Math.abs(s.vel.y) <= 1 ? 0 : s.vel.y, Math.abs(s.vel.z) <= 1 ? 0 : s.vel.z);
 			if(keyPlane.normal.y < 0) {
 				onTopOf = s;
 			}
 		}
 	}
-	
-	public static boolean a = false;
 	
 	private void castShadow() {
 		shadows.clear();

@@ -6,14 +6,15 @@ import java.util.LinkedList;
 
 public class Unit extends Shape3 {
 
-	private double acc = 3, jumpPower = 30;
+	private double acc = 3, jumpStrength = 30;
 	private int jumpNum = 0, dir = RIGHT, punchCounter = 0, kickCounter = 0, punchStrength = 1, kickStrength = 2;
 	public int maxMana = 100, mana = maxMana, manaRegen = 1, maxHealth = 20, health = maxHealth;
-	public boolean up = false, down = false, left = false, right = false, in = false, out = false, crouched = false, flying = false, speedy = false, kickReady = true, punchReady = true;
+	public boolean up = false, down = false, left = false, right = false, in = false, out = false, crouched = false, kickReady = true, punchReady = true;
+	public boolean flying = false, speedy = false, strength = false;
 	public static final int UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3, IN = 4, OUT = 5;
 	public static final Point3 SIZE = new Point3(60, 100, 10);
-	private final double flyMultiplyer = 2, speedMultiplyer = 3;
-	private final int flyCost = 2, speedCost = 2, invisCost = 2;
+	private final double flyMultiplier = 2, speedMultiplier = 3, strengthMultiplier = 2;
+	private final int flyCost = 2, speedCost = 2, invisCost = 2, strengthCost = 2;
 	private double maxAxialSpeed = 10;
 	public LinkedList<Shape3> allies = new LinkedList<Shape3>();
 	public Shape3 punch = null, kick = null;
@@ -106,6 +107,12 @@ public class Unit extends Shape3 {
 			mana -= invisCost;
 			if(mana <= 0) {
 				toggleInvisible();
+			}
+		}
+		if(strength) {
+			mana -= strengthCost;
+			if(mana <= 0) {
+				toggleStrength();
 			}
 		}
 		if(mana < maxMana) {
@@ -209,10 +216,10 @@ public class Unit extends Shape3 {
 		case LEFT:
 			if(this.dir == RIGHT) {
 				if(punch != null) {
-					punchCounter = 8;
+					stopPunch();
 				}
 				if(kick != null) {
-					kickCounter = 10;
+					stopKick();
 				}
 			}
 			this.dir = dir;
@@ -222,10 +229,10 @@ public class Unit extends Shape3 {
 		case RIGHT:
 			if(this.dir == LEFT) {
 				if(punch != null) {
-					punchCounter = 8;
+					stopPunch();
 				}
 				if(kick != null) {
-					kickCounter = 10;
+					stopKick();
 				}
 			}
 			this.dir = dir;
@@ -247,6 +254,9 @@ public class Unit extends Shape3 {
 			vel.y += acc;
 			break;
 		}
+		if(strength && hasDown && dir != UP && dir != DOWN) {
+			vel.y -= 5;
+		}
 	}
 
 	public void dampen() {
@@ -264,7 +274,7 @@ public class Unit extends Shape3 {
 			if(crouched) {
 				toggleCrouch();
 			}
-			vel.y -= jumpPower;
+			vel.y -= jumpStrength;
 			jumpNum++;
 		}
 	}
@@ -310,14 +320,14 @@ public class Unit extends Shape3 {
 
 	public void toggleFlying() {
 		if(!flying) {
-			maxAxialSpeed *= flyMultiplyer;
-			acc *= flyMultiplyer;
+			maxAxialSpeed *= flyMultiplier;
+			acc *= flyMultiplier;
 			vel.y = 0;
 			vel.x = 0;
 			vel.z = 0;
 		} else {
-			maxAxialSpeed /= flyMultiplyer;
-			acc /= flyMultiplyer;
+			maxAxialSpeed /= flyMultiplier;
+			acc /= flyMultiplier;
 		}
 		gravAffect = !gravAffect;
 		flying = !flying;
@@ -325,14 +335,30 @@ public class Unit extends Shape3 {
 
 	public void toggleSpeedy() {
 		if(speedy) {
-			maxAxialSpeed /= speedMultiplyer;
+			maxAxialSpeed /= speedMultiplier;
 		} else {
-			maxAxialSpeed *= speedMultiplyer;
+			maxAxialSpeed *= speedMultiplier;
 		}
 		speedy = !speedy;
 	}
 
 	public void toggleInvisible() {
 		invisible = !invisible;
+	}
+
+	public void toggleStrength() {
+		if(strength) {
+			maxAxialSpeed /= strengthMultiplier;
+			punchStrength /= strengthMultiplier;
+			kickStrength /= strengthMultiplier;
+			jumpStrength /= strengthMultiplier;
+			elasticity = 0;
+		} else {
+			maxAxialSpeed *= strengthMultiplier;
+			punchStrength *= strengthMultiplier;
+			kickStrength *= strengthMultiplier;
+			jumpStrength *= strengthMultiplier;
+		}
+		strength = !strength;
 	}
 }

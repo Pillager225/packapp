@@ -15,7 +15,9 @@ import java.awt.geom.AffineTransform;
 public class Plane {
 	
 	public Point3[] points;
+//	normal is a unit vector
 	public Point3 normal;
+//	constant is the multiplier of the direction vector to make it the true vector
 	public double constant;
 	public Shape shape;
 	public Color color = Color.BLACK;

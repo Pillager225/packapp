@@ -5,13 +5,15 @@ import java.awt.event.KeyListener;
 
 public class KeyAction implements KeyListener {
 
-	public int flyBinding, speedBinding, invisBinding;
-	private boolean flyReady = true, speedReady = true, invisReady = true;
+	public PowerUtil[] powers = new PowerUtil[4];
+	
+	public static int FLY = 0, SPEED = 1, INVIS = 2, STRENGTH = 3;
 	
 	public KeyAction() {
-		flyBinding = KeyEvent.VK_Q;
-		speedBinding = KeyEvent.VK_W;
-		invisBinding = KeyEvent.VK_E;
+		powers[FLY] = new PowerUtil(KeyEvent.VK_Q);
+		powers[SPEED] = new PowerUtil(KeyEvent.VK_W);
+		powers[INVIS] = new PowerUtil(KeyEvent.VK_E);
+		powers[STRENGTH] = new PowerUtil(KeyEvent.VK_R);
 	}
 	
 	@Override
@@ -24,6 +26,10 @@ public class KeyAction implements KeyListener {
 			Starter.changeWindowType();
 		}
 		if(Mode == TheThread.GAME) {
+			// This is here so that when strength is on the player can bounce. I know it isn't a good solution, but it was the best I could figure out.
+			if((keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT || keyCode == KeyEvent.VK_DOWN || keyCode == KeyEvent.VK_UP) && TheThread.player.strength) {
+				TheThread.player.elasticity = 1;
+			}
 			if(keyCode == KeyEvent.VK_LEFT) {
 				TheThread.player.left = true;
 				TheThread.player.right = false;
@@ -54,15 +60,18 @@ public class KeyAction implements KeyListener {
 						TheThread.player.toggleCrouch();
 					}
 				}
-			} else if(keyCode == flyBinding && flyReady) {
-				flyReady = false;
+			} else if(keyCode == powers[FLY].binding && powers[FLY].ready) {
+				powers[FLY].ready = false;
 				TheThread.player.toggleFlying();
-			} else if(keyCode == speedBinding && speedReady) {
-				speedReady = false;
+			} else if(keyCode == powers[SPEED].binding && powers[SPEED].ready) {
+				powers[SPEED].ready = false;
 				TheThread.player.toggleSpeedy();
-			} else if(keyCode == invisBinding && invisReady) {
-				invisReady = false;
+			} else if(keyCode == powers[INVIS].binding && powers[INVIS].ready) {
+				powers[INVIS].ready = false;
 				TheThread.player.toggleInvisible();
+			} else if(keyCode == powers[STRENGTH].binding && powers[STRENGTH].ready) {
+				powers[STRENGTH].ready = false;
+				TheThread.player.toggleStrength();
 			} else if(keyCode == KeyEvent.VK_P) {
 				TheThread.setMode(TheThread.PAUSE);
 			} else if(keyCode == KeyEvent.VK_M) {
@@ -73,9 +82,6 @@ public class KeyAction implements KeyListener {
 			} else if(keyCode == KeyEvent.VK_S && TheThread.player.kickReady) {
 				TheThread.player.kick();
 				TheThread.player.kickReady = false;
-			} else if(keyCode == KeyEvent.VK_N) {
-				System.out.println("Objects length: " + TheThread.objects.length);
-				Shape3.a = true;
 			}
 		} else if(Mode == TheThread.PAUSE) {
 			if(keyCode == KeyEvent.VK_P) {
@@ -89,6 +95,10 @@ public class KeyAction implements KeyListener {
 		int Mode = TheThread.getMode();
 		int keyCode = e.getKeyCode();
 		if(Mode == TheThread.GAME) {
+			// opposite of the one in keyPressed
+			if((keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT || keyCode == KeyEvent.VK_DOWN || keyCode == KeyEvent.VK_UP) && TheThread.player.strength) {
+				TheThread.player.elasticity = 0;
+			}
 			if(keyCode == KeyEvent.VK_LEFT) {
 				TheThread.player.left = false;
 			} else if(keyCode == KeyEvent.VK_RIGHT) {
@@ -107,12 +117,14 @@ public class KeyAction implements KeyListener {
 						TheThread.player.toggleCrouch();
 					}
 				}
-			} else if(keyCode == flyBinding) {
-				flyReady = true;
-			} else if(keyCode == speedBinding) {
-				speedReady = true;
-			} else if(keyCode == invisBinding) {
-				invisReady = true;
+			} else if(keyCode == powers[FLY].binding) {
+				powers[FLY].ready = true;
+			} else if(keyCode == powers[SPEED].binding) {
+				powers[SPEED].ready = true;
+			} else if(keyCode == powers[INVIS].binding) {
+				powers[INVIS].ready = true;
+			} else if(keyCode == powers[STRENGTH].binding) {
+				powers[STRENGTH].ready = true;
 			}
 		}
 	}

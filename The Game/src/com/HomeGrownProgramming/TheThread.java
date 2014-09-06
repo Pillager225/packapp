@@ -39,20 +39,7 @@ public class TheThread extends Thread {
 				}
 			});
 		} else if(mode == START_GAME) {
-			objects = new Shape3[0];
-			LinkedList<Shape3> objs = new LinkedList<Shape3>();
-			objs.add(new Shape3(new Point3(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE), new Point3(1, 1, 1), Shape3.DIMENSIONS, Color.WHITE, 100, 0, false));
-			objs.getLast().gravAffect = false;
-			objs.add(new Shape3(new Point3(-100, 100, 0), new Point3(0, 500, Shape3.MAX_DEPTH), Shape3.OPPOSITE_POINT, Color.GRAY, 100, 0, false));
-			objs.getLast().gravAffect = false;
-			objs.add(new Shape3(new Point3(0, 400, 0), new Point3(2000, 100, Shape3.MAX_DEPTH), Shape3.DIMENSIONS, Color.GRAY, 100, 0, false));
-			objs.getLast().gravAffect = false;
-			objs.add(new Unit(new Point3(1000, 0, 0), Color.GREEN));
-			player = (Unit) objs.getLast();
-			Point3 pCenter = player.getCenter();
-			view = new Rectangle((int) (pCenter.x+pCenter.z-Starter.screenSize.width/2), (int)(pCenter.y-pCenter.z-Starter.screenSize.height/2), Starter.screenSize.width, Starter.screenSize.height);
-			objs.add(new Unit(new Point3(100, 0, 0), Color.RED));
-			objects = objs.toArray(objects);
+			startGame();
 		}
 		if(mode == START_GAME) {
 			mode = GAME;
@@ -148,7 +135,26 @@ public class TheThread extends Thread {
 		g.fill(new Rectangle.Double(40, 50, player.mana, 30));
 	}
 	
-	private Shape3[] mergeSort(Shape3[] arr) {
+	private static void startGame() {
+		objects = new Shape3[0];
+		LinkedList<Shape3> objs = new LinkedList<Shape3>();
+		objs.add(new Shape3(new Point3(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE), new Point3(1, 1, 1), Shape3.DIMENSIONS, Color.WHITE, 100, 0, false));
+		objs.getLast().gravAffect = false;
+		objs.add(new Shape3(new Point3(-100, 100, 0), new Point3(0, 500, Shape3.MAX_DEPTH), Shape3.OPPOSITE_POINT, Color.GRAY, 100, 0, false));
+		objs.getLast().gravAffect = false;
+		objs.add(new Shape3(new Point3(0, 400, 0), new Point3(2000, 100, Shape3.MAX_DEPTH), Shape3.DIMENSIONS, Color.GRAY, 100, 0, false));
+		objs.getLast().gravAffect = false;
+		objs.add(new Unit(new Point3(1000, 295, 0), Color.GREEN));
+		player = (Unit) objs.getLast();
+		player.vel = new Point3(100, 0, 0);
+//TODO 		player.elasticity = 1;
+		Point3 pCenter = player.getCenter();
+		view = new Rectangle((int) (pCenter.x+pCenter.z-Starter.screenSize.width/2), (int)(pCenter.y-pCenter.z-Starter.screenSize.height/2), Starter.screenSize.width, Starter.screenSize.height);
+		objs.add(new Unit(new Point3(100, 0, 0), Color.RED));
+		objects = objs.toArray(objects);
+	}
+	
+/*	private Shape3[] mergeSort(Shape3[] arr) {
 		if(arr.length > 1) {
 			Shape3[] left = new Shape3[arr.length/2], right = new Shape3[arr.length-arr.length/2];
 			int i;
@@ -181,7 +187,7 @@ public class TheThread extends Thread {
 			return temp;
 		}
 		return arr;
-	}
+	} */
 	
 	private Shape3[] insertionSort(Shape3[] a) {
 		for(int i = 1; i < a.length; i++) {
@@ -254,8 +260,6 @@ public class TheThread extends Thread {
 			if(!objects[i].equals(o)) {
 				newObjects[j] = objects[i];
 				j++;
-			} else {
-				System.out.print("");
 			}
 		}
 		objects = newObjects;
