@@ -100,6 +100,8 @@ public class TheThread extends Thread {
 			for(Shape3 s : objects) {
 				s.update();
 				if(s.getClass().equals(Unit.class)) {
+					Unit u = (Unit)s;
+					u.updateProjectiles(); // TODO test projectiles
 				}
 			}
 			Point3 pCenter = player.getCenter();
@@ -109,7 +111,6 @@ public class TheThread extends Thread {
 			if((Math.abs(pCenter.y-view.y) < 400 && player.vel.y < 0) || (Math.abs(pCenter.y-(view.y+view.height)) < 400 && player.vel.y > 0)) {
 				view.y += player.vel.y;
 			}
-//			objects = mergeSort(objects);
 			objects = insertionSort(objects);
 			if(infiniMana) {
 				player.mana = player.maxMana;
@@ -136,58 +137,20 @@ public class TheThread extends Thread {
 	}
 	
 	private static void startGame() {
-		objects = new Shape3[0];
-		LinkedList<Shape3> objs = new LinkedList<Shape3>();
-		objs.add(new Shape3(new Point3(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE), new Point3(1, 1, 1), Shape3.DIMENSIONS, Color.WHITE, 100, 0, false));
-		objs.getLast().gravAffect = false;
-		objs.add(new Shape3(new Point3(-100, 100, 0), new Point3(0, 500, Shape3.MAX_DEPTH), Shape3.OPPOSITE_POINT, Color.GRAY, 100, 0, false));
-		objs.getLast().gravAffect = false;
-		objs.add(new Shape3(new Point3(0, 400, 0), new Point3(2000, 100, Shape3.MAX_DEPTH), Shape3.DIMENSIONS, Color.GRAY, 100, 0, false));
-		objs.getLast().gravAffect = false;
-		objs.add(new Unit(new Point3(1000, 295, 0), Color.GREEN));
-		player = (Unit) objs.getLast();
-		player.vel = new Point3(100, 0, 0);
-//TODO 		player.elasticity = 1;
-		Point3 pCenter = player.getCenter();
-		view = new Rectangle((int) (pCenter.x+pCenter.z-Starter.screenSize.width/2), (int)(pCenter.y-pCenter.z-Starter.screenSize.height/2), Starter.screenSize.width, Starter.screenSize.height);
-		objs.add(new Unit(new Point3(100, 0, 0), Color.RED));
-		objects = objs.toArray(objects);
+		loadStage(0);
 	}
 	
-/*	private Shape3[] mergeSort(Shape3[] arr) {
-		if(arr.length > 1) {
-			Shape3[] left = new Shape3[arr.length/2], right = new Shape3[arr.length-arr.length/2];
-			int i;
-			for(i = 0; i < left.length; i++) {
-				left[i] = arr[i];
-			}
-			for(int j = 0; j <right.length; j++) {
-				right[j] = arr[i++];
-			}
-			left = mergeSort(left);
-			right = mergeSort(right);
-			Shape3[] temp = new Shape3[arr.length];
-			Point3 viewPoint = new Point3(1920, 0, 0);
-			int lloc = 0, rloc = 0;
-			for(i = 0; i < temp.length; i++) {
-				if(lloc >= left.length && rloc < right.length) {
-					temp[i] = right[rloc++];
-				} else if(rloc >= right.length && lloc < left.length) {
-					temp[i] = left[lloc++];
-				} else {
-					Point3 leftPoint = new Point3(left[lloc].minX, left[lloc].maxY, left[lloc].maxZ), rightPoint = new Point3(right[rloc].minX, right[rloc].maxY, right[rloc].maxZ);
-					double leftDist = Point3.getDistanceBetween(leftPoint, viewPoint), rightDist = Point3.getDistanceBetween(rightPoint, viewPoint);
-					if(leftDist >= rightDist) {
-						temp[i] = left[lloc++];
-					} else {
-						temp[i] = right[rloc++];
-					}
-				}
-			}
-			return temp;
+	private static void loadStage(int stageNum) {
+		Stage s = new Stage();
+		switch(stageNum) {
+			case 0:
+				s.loadStage0();
+				break;
 		}
-		return arr;
-	} */
+		objects = s.objects;
+		view = s.view;
+		player = s.player;
+	}
 	
 	private Shape3[] insertionSort(Shape3[] a) {
 		for(int i = 1; i < a.length; i++) {

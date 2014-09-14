@@ -7,8 +7,8 @@ import java.util.LinkedList;
 public class Unit extends Shape3 {
 
 	private double acc = 3, jumpStrength = 30;
-	private int jumpNum = 0, dir = RIGHT, punchCounter = 0, kickCounter = 0, punchStrength = 1, kickStrength = 2;
-	public int maxMana = 100, mana = maxMana, manaRegen = 1, maxHealth = 20, health = maxHealth;
+	private int dir = RIGHT, punchCounter = 0, kickCounter = 0, punchStrength = 1, kickStrength = 2;
+	public int jumpNum = 0, maxMana = 100, mana = maxMana, manaRegen = 1, maxHealth = 20, health = maxHealth;
 	public boolean up = false, down = false, left = false, right = false, in = false, out = false, crouched = false, kickReady = true, punchReady = true;
 	public boolean flying = false, speedy = false, strength = false;
 	public static final int UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3, IN = 4, OUT = 5;
@@ -17,6 +17,7 @@ public class Unit extends Shape3 {
 	private final int flyCost = 2, speedCost = 2, invisCost = 2, strengthCost = 2;
 	private double maxAxialSpeed = 10;
 	public LinkedList<Shape3> allies = new LinkedList<Shape3>();
+	public LinkedList<Projectile> projectiles = new LinkedList<Projectile>();
 	public Shape3 punch = null, kick = null;
 	
 	public Unit() {
@@ -39,6 +40,12 @@ public class Unit extends Shape3 {
 		keepZWithinBounds();
 		if(health <= 0) {
 			TheThread.deleteObject(this);
+		}
+	}
+	
+	public void updateProjectiles() {
+		for(Projectile p : projectiles) {
+			p.update();
 		}
 	}
 	
@@ -270,12 +277,12 @@ public class Unit extends Shape3 {
 	}
 	
 	public void jump() {
-		if(jumpNum < 2) {
-			if(crouched) {
-				toggleCrouch();
-			}
-			vel.y -= jumpStrength;
-			jumpNum++;
+		if(crouched) {
+			toggleCrouch();
+		}
+		vel.y -= jumpStrength;
+		if(vel.y <= -2*jumpStrength) {
+			vel.y = -2*jumpStrength;
 		}
 	}
 

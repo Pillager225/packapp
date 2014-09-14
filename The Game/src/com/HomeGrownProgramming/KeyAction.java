@@ -47,7 +47,10 @@ public class KeyAction implements KeyListener {
 					TheThread.player.up = true;
 					TheThread.player.down = false;
 				} else {
-					TheThread.player.jump();
+					if(TheThread.player.jumpNum < 2) {
+						TheThread.player.jump();
+						TheThread.player.jumpNum++;
+					}
 				}
 			} else if(keyCode == KeyEvent.VK_ENTER) {
 				TheThread.setMode(TheThread.START_GAME);

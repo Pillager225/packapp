@@ -34,6 +34,10 @@ public class Shape3 {
 	}
 	
 	public Shape3(Point3[] points, Color color, double mass, double elasticity, boolean moveable) {
+		construct(points, color, mass, elasticity, moveable);
+	}
+	
+	protected void construct(Point3[] points, Color color, double mass, double elasticity, boolean moveable) {
 		this.points = points;
 		this.color = color;
 		this.mass = mass;
