@@ -6,6 +6,8 @@ import java.awt.event.MouseMotionListener;
 
 public class MouseAction implements MouseListener, MouseMotionListener {
 
+	Point3 mousePos = new Point3(0, 0, 0);
+	
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		
@@ -13,7 +15,7 @@ public class MouseAction implements MouseListener, MouseMotionListener {
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		
+		mousePos = new Point3(e.getX()+TheThread.view.x, e.getY()+TheThread.view.y, 0);
 	}
 
 	@Override

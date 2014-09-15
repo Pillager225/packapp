@@ -32,7 +32,7 @@ public class Plane {
 	public Plane(Point3[] points, Color color) {
 		this.color = color;
 		this.points = points;
-		int[] xpoints = new int[4], ypoints = new int[points.length];
+		int[] xpoints = new int[points.length], ypoints = new int[points.length];
 		for(int i = 0; i < points.length; i++) {
 			if(minX > points[i].x) {
 				minX = points[i].x;
@@ -62,7 +62,7 @@ public class Plane {
 	
 	private void setNormal() {
 		Point3 v1 = new Point3(points[1].x-points[0].x, points[1].y-points[0].y, points[1].z-points[0].z);
-		Point3 v2 = new Point3(points[3].x-points[0].x, points[3].y-points[0].y, points[3].z-points[0].z);
+		Point3 v2 = new Point3(points[points.length-1].x-points[0].x, points[points.length-1].y-points[0].y, points[points.length-1].z-points[0].z);
 		normal = Point3.getUnitVector(new Point3(v1.y*v2.z-v1.z*v2.y, -(v1.x*v2.z-v1.z*v2.x), v1.x*v2.y-v1.y*v2.x));
 	}
 	

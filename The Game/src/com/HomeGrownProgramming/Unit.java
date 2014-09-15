@@ -14,18 +14,20 @@ public class Unit extends Shape3 {
 	public static final int UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3, IN = 4, OUT = 5;
 	public static final Point3 SIZE = new Point3(60, 100, 10);
 	private final double flyMultiplier = 2, speedMultiplier = 3, strengthMultiplier = 2;
-	private final int flyCost = 2, speedCost = 2, invisCost = 2, strengthCost = 2;
+	private final int flyCost = 2, speedCost = 2, invisCost = 2, strengthCost = 2, fiCost = 100;
 	private double maxAxialSpeed = 10;
 	public LinkedList<Shape3> allies = new LinkedList<Shape3>();
-	public LinkedList<Projectile> projectiles = new LinkedList<Projectile>();
+	public Projectile[] projectiles = new Projectile[0];
 	public Shape3 punch = null, kick = null;
 	
 	public Unit() {
 		super();
+		allies.add(this);
 	}
 	
 	public Unit(Point3 pos, Color c) {
 		super(pos, SIZE, DIMENSIONS, c, 60, 0, true);
+		allies.add(this);
 	}
 
 	public void update() {
@@ -367,5 +369,43 @@ public class Unit extends Shape3 {
 			jumpStrength *= strengthMultiplier;
 		}
 		strength = !strength;
+	}
+
+	public void fireToward(Point3 target) {
+		if(mana >= fiCost) {
+			mana -= fiCost;
+			addProjectile(new Projectile(new Point3(points[0].x, points[0].y, points[1].z-points[0].z), target, Projectile.FIRE, this));
+		}
+	}
+	
+	public void iceToward(Point3 target) {
+		if(mana >= fiCost) {
+			mana -= fiCost;
+			addProjectile(new Projectile(new Point3(points[0].x, points[0].y, points[1].z-points[0].z), target, Projectile.ICE, this));
+		}
+	}
+	
+	public void deleteProjectile(Projectile p) {
+		Projectile[] newProjectiles = new Projectile[projectiles.length-1];
+		int j = 0;
+		for(int i = 0; i < projectiles.length; i++) {
+			if(!projectiles[i].equals(p)) {
+				newProjectiles[j] = projectiles[i];
+				j++;
+			}
+		}
+		projectiles = newProjectiles;
+		TheThread.deleteObject(p);
+	}
+	
+	public void addProjectile(Projectile p) {
+		TheThread.addObject(p);
+		allies.add(p);
+		Projectile[] newProjectiles = new Projectile[projectiles.length+1];
+		for(int i = 0; i < projectiles.length; i++) {
+			newProjectiles[i] = projectiles[i];
+		}
+		newProjectiles[projectiles.length] = p;
+		projectiles = newProjectiles;
 	}
 }

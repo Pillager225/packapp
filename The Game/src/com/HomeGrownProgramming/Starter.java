@@ -59,6 +59,7 @@ public class Starter {
 //           	music.startMusic("music.mp3");
            	TheThread thread = new TheThread(); // creates our main thread
            	thread.start(); // starts our thread
+           	frame.requestFocus();
        	} catch (Exception e) {
        		e.printStackTrace(); // If we get an error, prevent it from crashing completely and tell us what is up.
        	}

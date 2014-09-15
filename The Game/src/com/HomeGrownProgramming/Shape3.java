@@ -18,13 +18,15 @@ public class Shape3 {
 	public boolean moveable, gravAffect, invisible = false, isShadow = false;
 	protected boolean applyFrictionX = true, applyFrictionZ = true, hasLeft = false, hasRight = false, hasUp = false, hasDown = false, hasIn = false, hasOut = false;
 	protected Shape3 onTopOf = null, collided = null;
-	public int topPlaneIndex = -1;
+	public int topPlaneIndex = -1, idnum;
 	public LinkedList<Shape3> shadows = new LinkedList<Shape3>();
+	public static int lastIdnum = -1;
 	
 	public static final int OPPOSITE_POINT = 0, DIMENSIONS = 1;
 	public static final double accDueToGrav = 3, MAX_DEPTH = 100;
 	
 	public Shape3() {
+		idnum = ++lastIdnum;
 		points = null;
 		color = Color.BLACK;
 		mass = 0;
@@ -38,6 +40,7 @@ public class Shape3 {
 	}
 	
 	protected void construct(Point3[] points, Color color, double mass, double elasticity, boolean moveable) {
+		idnum = ++lastIdnum;
 		this.points = points;
 		this.color = color;
 		this.mass = mass;
@@ -52,6 +55,7 @@ public class Shape3 {
 	 * p1 should have a smaller x, y, z value than p2 if(type == OPPOSITE_POINT)
 	*/
 	public Shape3(Point3 p1, Point3 p2, int type, Color color, double mass, double elasticity, boolean moveable) {
+		idnum = ++lastIdnum;
 		points = new Point3[8];
 		if(type == OPPOSITE_POINT) {
 			points[0] = p1;
@@ -90,6 +94,7 @@ public class Shape3 {
 	}
 	
 	public Shape3(double minX, double minY, double minZ, double maxX, double maxY, double maxZ, boolean isShadow) {
+		idnum = ++lastIdnum;
 		this.minX = minX;
 		this.minY = minY;
 		this.minZ = minZ;
@@ -551,5 +556,9 @@ public class Shape3 {
 				maxZ = p.maxZ;
 			}
 		}
+	}
+
+	public boolean equals(Shape3 s) {
+		return s != null && idnum == s.idnum;
 	}
 }

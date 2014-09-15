@@ -5,15 +5,17 @@ import java.awt.event.KeyListener;
 
 public class KeyAction implements KeyListener {
 
-	public PowerUtil[] powers = new PowerUtil[4];
+	public PowerUtil[] powers = new PowerUtil[6];
 	
-	public static int FLY = 0, SPEED = 1, INVIS = 2, STRENGTH = 3;
+	public static int FLY = 0, SPEED = 1, INVIS = 2, STRENGTH = 3, FIRE = 4, ICE = 5;
 	
 	public KeyAction() {
 		powers[FLY] = new PowerUtil(KeyEvent.VK_Q);
 		powers[SPEED] = new PowerUtil(KeyEvent.VK_W);
 		powers[INVIS] = new PowerUtil(KeyEvent.VK_E);
 		powers[STRENGTH] = new PowerUtil(KeyEvent.VK_R);
+		powers[FIRE] = new PowerUtil(KeyEvent.VK_T);
+		powers[ICE] = new PowerUtil(KeyEvent.VK_Y);
 	}
 	
 	@Override
@@ -85,6 +87,12 @@ public class KeyAction implements KeyListener {
 			} else if(keyCode == KeyEvent.VK_S && TheThread.player.kickReady) {
 				TheThread.player.kick();
 				TheThread.player.kickReady = false;
+			} else if(keyCode == powers[FIRE].binding && powers[FIRE].ready) {
+				TheThread.player.fireToward(Starter.ma.mousePos);
+				powers[FIRE].ready = false;
+			} else if(keyCode == powers[ICE].binding && powers[ICE].ready) {
+				TheThread.player.iceToward(Starter.ma.mousePos);
+				powers[ICE].ready = false;
 			}
 		} else if(Mode == TheThread.PAUSE) {
 			if(keyCode == KeyEvent.VK_P) {
@@ -128,6 +136,10 @@ public class KeyAction implements KeyListener {
 				powers[INVIS].ready = true;
 			} else if(keyCode == powers[STRENGTH].binding) {
 				powers[STRENGTH].ready = true;
+			} else if(keyCode == powers[FIRE].binding) {
+				powers[FIRE].ready = true;
+			} else if(keyCode == powers[ICE].binding) {
+				powers[ICE].ready = true;
 			}
 		}
 	}

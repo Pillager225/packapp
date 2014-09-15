@@ -21,6 +21,16 @@ public class Stage {
 		objs.getLast().gravAffect = false;
 		objs.add(new Shape3(new Point3(0, 400, 0), new Point3(2000, 100, Shape3.MAX_DEPTH), Shape3.DIMENSIONS, Color.GRAY, 100, 0, false));
 		objs.getLast().gravAffect = false;
+		Point3[] points = new Point3[8];
+		points[0] = new Point3(1200, 400, 0);
+		points[1] = new Point3(1200, 400, Shape3.MAX_DEPTH);
+		points[2] = new Point3(2000, -200, 0);
+		points[3] = new Point3(2000, -200, Shape3.MAX_DEPTH);
+		points[4] = new Point3(2100, -200, 0);
+		points[5] = new Point3(2100, -200, Shape3.MAX_DEPTH);
+		points[6] = new Point3(2000, 400, 0);
+		points[7] = new Point3(2100, 400, Shape3.MAX_DEPTH);
+		objs.add(new Shape3(points, Color.GRAY, 100, 0, false));
 		objs.add(new Unit(new Point3(1000, 295, 0), Color.GREEN));
 		player = (Unit) objs.getLast();
 		Point3 pCenter = player.getCenter();

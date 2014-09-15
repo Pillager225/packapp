@@ -5,13 +5,17 @@ import java.awt.Color;
 public class Projectile extends Shape3 {
 
 	public static final int FIRE = 0, ICE = 1;
-	private final double fiWidth = 150, fiDiag = Math.sqrt(200);
+	private final double fiWidth = 150, fiDiag = Math.sqrt(200), fiSpeed = 10, fiStrength = 5;
 	private int type;
 	Point3 direction;
-
+	Unit parent;
+	// if(!alive) { awaitDeletion(); }
+	private boolean alive = true; 
+	
 	// origin should be considered to be in the center of the Projectile on the yz plane, starting at origin.
-	public Projectile(Point3 origin, Point3 target, int type) {
+	public Projectile(Point3 origin, Point3 target, int type, Unit parent) {
 		this.type = type;
+		this.parent = parent;
 		direction = Point3.getUnitVector(new Point3(target.x-origin.x, target.y-origin.y, target.z-origin.z));
 		Point3 vertVect = new Point3(0, 1, 0);
 		// d1 and d2 is perpendicular to direction 
@@ -42,10 +46,26 @@ public class Projectile extends Shape3 {
 				color = Color.BLUE;
 			}
 			construct(points, color, (double)5, (double)0, true);
+			gravAffect = false;
 		}
 	}
 	
+	@Override
 	public void update() {
-		
+		if(alive) {
+			if(type == FIRE || type == ICE) {
+				vel = Point3.getScalarMultiple(fiSpeed, direction);
+			}
+			excludes.add(parent);
+			super.update();
+			if(collided != null) {
+				parent.deleteProjectile(this);
+				if(collided.getClass() == Unit.class) {
+					Unit u = (Unit) collided;
+					u.health -= fiStrength;
+				}
+				alive = false;
+			}
+		}
 	}
 }

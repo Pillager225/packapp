@@ -15,6 +15,7 @@ public class TheThread extends Thread {
 	long beginTime, timeDiff, sleeptime = 0; //To get the FPS correct. It helps with skipping and the timing.
 	private int framesSkipped = 0, maxFPSskips = 5, FPS = 30, skipTicks = 1000/FPS; // same as above
 	private static int Mode;
+	private final int s1First = 0, s2First = 1, INTERSECTING = 2;
 	public static final int PAUSE = 0, TITLE = 1, GAME = 2, START_GAME = 3;
 	public static Rectangle view = new Rectangle(0, 0, Starter.screenSize.width, Starter.screenSize.height);
 	public static Shape3[] objects = new Shape3[0];
@@ -39,7 +40,7 @@ public class TheThread extends Thread {
 				}
 			});
 		} else if(mode == START_GAME) {
-			startGame();
+			loadStage(0);
 		}
 		if(mode == START_GAME) {
 			mode = GAME;
@@ -90,6 +91,9 @@ public class TheThread extends Thread {
 					deleteObject(objects[i]);
 				}
 			}
+		} else if(Mode == START_GAME) {
+			g.setColor(Color.CYAN);
+			g.fillRect(0, 0, screen.width, screen.height);
 		}
 		g.dispose();
 		return image;
@@ -101,7 +105,7 @@ public class TheThread extends Thread {
 				s.update();
 				if(s.getClass().equals(Unit.class)) {
 					Unit u = (Unit)s;
-					u.updateProjectiles(); // TODO test projectiles
+					u.updateProjectiles(); 
 				}
 			}
 			Point3 pCenter = player.getCenter();
@@ -134,10 +138,6 @@ public class TheThread extends Thread {
 		// Light blue
 		g.setColor(new Color(0, 110, 255));
 		g.fill(new Rectangle.Double(40, 50, player.mana, 30));
-	}
-	
-	private static void startGame() {
-		loadStage(0);
 	}
 	
 	private static void loadStage(int stageNum) {
@@ -183,8 +183,6 @@ public class TheThread extends Thread {
 		}
 		return a;
 	}
-	
-	private static final int s1First = 0, s2First = 1, INTERSECTING = 2;
 	
 	private int checkX(Shape3 s1, Shape3 s2) {
 		if(s1.minX >= s2.maxX) {
