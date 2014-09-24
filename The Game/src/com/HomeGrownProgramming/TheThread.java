@@ -40,7 +40,7 @@ public class TheThread extends Thread {
 				}
 			});
 		} else if(mode == START_GAME) {
-			loadStage(0);
+			loadStage(Stage.START_STAGE);
 		}
 		if(mode == START_GAME) {
 			mode = GAME;
@@ -142,11 +142,7 @@ public class TheThread extends Thread {
 	
 	private static void loadStage(int stageNum) {
 		Stage s = new Stage();
-		switch(stageNum) {
-			case 0:
-				s.loadStage0();
-				break;
-		}
+		s.loadStage(stageNum);
 		objects = s.objects;
 		view = s.view;
 		player = s.player;
