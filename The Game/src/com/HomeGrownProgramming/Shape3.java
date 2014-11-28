@@ -8,7 +8,7 @@ import java.util.LinkedList;
 public class Shape3 {
 	
 	protected Point3[] points;
-	private Plane[] sides = new Plane[0];
+	public Plane[] sides = new Plane[0];
 	public Point3 vel = new Point3(0, 0, 0);
 	protected Color color;
 	// mass is in kilograms, elasticity is between 0 and 1.
@@ -17,10 +17,11 @@ public class Shape3 {
 	public LinkedList<Shape3> excludes = new LinkedList<Shape3>();
 	public boolean moveable, gravAffect, invisible = false, isShadow = false;
 	protected boolean applyFrictionX = true, applyFrictionZ = true, hasLeft = false, hasRight = false, hasUp = false, hasDown = false, hasIn = false, hasOut = false;
-	protected Shape3 onTopOf = null, collided = null;
-	public int topPlaneIndex = -1, idnum;
+	protected Shape3 onTopOf = null, collided = null, above = null;
+	public int idnum;
 	public LinkedList<Shape3> shadows = new LinkedList<Shape3>();
 	public static int lastIdnum = -1;
+	public Plane topPlane, frontPlane;
 	
 	public static final int OPPOSITE_POINT = 0, DIMENSIONS = 1;
 	public static final double accDueToGrav = 3, MAX_DEPTH = 100;
@@ -142,6 +143,9 @@ public class Shape3 {
 	}
 	
 	public void draw(Graphics2D g) {
+		for(Shape3 s : shadows) {
+			s.draw(g);
+		}
 		if(invisible || isShadow) {
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .5f));
 		}
@@ -166,12 +170,12 @@ public class Shape3 {
 			if(gravAffect && !hasDown) {
 				vel.y += accDueToGrav;
 			}
-			onTopOf = null;
 			if(hasDown) {
 				applyFriction();
 			}
 			translate(vel.x, vel.y, vel.z);
 			collided = null;
+			onTopOf = null;
 			for(Shape3 s : TheThread.objects) {
 				if(!s.equals(this) && !excludes.contains(s) && !s.equals(onTopOf)) {
 					Point3 interPoint = getIntersectingPoint(s);
@@ -257,10 +261,10 @@ public class Shape3 {
 		LinkedList<Plane> possiblePlanes = new LinkedList<Plane>();
 		for(Shape3 s : TheThread.objects) {
 			if(!s.equals(this) 
-					&& (s.sides[s.topPlaneIndex].minX <= maxX && s.sides[s.topPlaneIndex].maxX >= minX) 
-					&& (s.sides[s.topPlaneIndex].minZ <= maxZ && s.sides[s.topPlaneIndex].maxZ >= minZ)
-					&& s.sides[s.topPlaneIndex].minY-maxY > 0) {
-				possiblePlanes.add(s.sides[s.topPlaneIndex]);
+					&& (s.topPlane.minX <= maxX && s.topPlane.maxX >= minX) 
+					&& (s.topPlane.minZ <= maxZ && s.topPlane.maxZ >= minZ)
+					&& s.topPlane.minY-maxY > 0) {
+				possiblePlanes.add(s.topPlane);
 			}
 		}
 		if(!possiblePlanes.isEmpty()) {
@@ -279,9 +283,8 @@ public class Shape3 {
 				double shadowMaxX0 = maxX < shadowedPlane[0].maxX ? maxX : shadowedPlane[0].maxX;
 				double shadowMinZ0 = minZ > shadowedPlane[0].minZ ? minZ : shadowedPlane[0].minZ;
 				double shadowMaxZ0 = maxZ < shadowedPlane[0].maxZ ? maxZ : shadowedPlane[0].maxZ;
-				Shape3 newShadow = new Shape3(shadowMinX0, shadowedPlane[0].minY, shadowMinZ0, shadowMaxX0, shadowedPlane[0].maxY, shadowMaxZ0, true);
+				Shape3 newShadow = new Shape3(shadowMinX0, (-shadowedPlane[0].normal.x*(shadowMinX0-shadowedPlane[0].points[0].x)-shadowedPlane[0].normal.z*(shadowMinZ0-shadowedPlane[0].points[0].z))/shadowedPlane[0].normal.y+shadowedPlane[0].points[0].y, shadowMinZ0, shadowMaxX0, (-shadowedPlane[0].normal.x*(shadowMaxX0-shadowedPlane[0].points[0].x)-shadowedPlane[0].normal.z*(shadowMaxZ0-shadowedPlane[0].points[0].z))/shadowedPlane[0].normal.y+shadowedPlane[0].points[0].y, shadowMaxZ0, true);
 				if(shadowedPlane[0].minY-maxY > 3){
-					TheThread.addObject(newShadow);
 					shadows.add(newShadow);
 				}
 				if(shadowedPlane[1] != null) {
@@ -289,9 +292,8 @@ public class Shape3 {
 					double shadowMaxX1 = maxX < shadowedPlane[1].maxX ? maxX : shadowedPlane[1].maxX;
 					double shadowMinZ1 = minZ > shadowedPlane[1].minZ ? minZ : shadowedPlane[1].minZ;
 					double shadowMaxZ1 = maxZ < shadowedPlane[1].maxZ ? maxZ : shadowedPlane[1].maxZ;
-					newShadow = new Shape3(shadowMinX1, shadowedPlane[1].minY, shadowMinZ1, shadowMaxX1, shadowedPlane[1].maxY, shadowMaxZ1, true);
+					newShadow = new Shape3(shadowMinX1, (-shadowedPlane[1].normal.x*(shadowMinX1-shadowedPlane[1].points[0].x)-shadowedPlane[1].normal.z*(shadowMinZ1-shadowedPlane[1].points[0].z))/shadowedPlane[1].normal.y+shadowedPlane[1].points[0].y, shadowMinZ1, shadowMaxX1, (-shadowedPlane[1].normal.x*(shadowMaxX1-shadowedPlane[1].points[0].x)-shadowedPlane[1].normal.z*(shadowMaxZ1-shadowedPlane[1].points[0].z))/shadowedPlane[1].normal.y+shadowedPlane[1].points[0].y, shadowMaxZ1, true);
 					if(shadowedPlane[1].minY-maxY > 3) {
-						TheThread.addObject(newShadow);
 						shadows.add(newShadow);
 					}
 				}
@@ -303,9 +305,11 @@ public class Shape3 {
 		Shape3 extShape = new Shape3(new Point3(minX+1, maxY, minZ+1), new Point3(maxX-minX-2, 2, maxZ-minZ-2), DIMENSIONS, Color.WHITE, 0, 0, false);
 		for(Shape3 s : TheThread.objects) {
 			if(!this.equals(s) && extShape.intersects(s)) {
+				above = s;
 				return true;
 			}
 		}
+		above = null;
 		return false;
 	}
 	
@@ -443,14 +447,19 @@ public class Shape3 {
 				j = 0;
 			}
 			Point3[] temp1 = {points[i], points[i+1], points[j+1], points[j]};
-			ll.add(new Plane(temp1, color));
+			Plane p = new Plane(temp1, color);
+			if(i == 0) {
+				topPlane = p;
+			}
+			ll.add(p);
 		}
 		Point3[] temp = new Point3[points.length/2];
 		j = 0;
 		for(int i = 0; i < points.length; i += 2) {
 			temp[j++] = points[i];
 		}
-		ll.add(new Plane(temp, color));
+		frontPlane = new Plane(temp, color);
+		ll.add(frontPlane);
 		sides = ll.toArray(sides);
 		sortSides();
 	}
@@ -459,13 +468,6 @@ public class Shape3 {
 		sortX();
 		sortY();
 		sortZ();
-		Plane topPlane = null;
-		for(int i = 0; i < sides.length; i++) {
-			if(topPlane == null || (sides[i].minY == sides[i].maxY && sides[i].minY < topPlane.minY)) {
-				topPlane = sides[i];
-				topPlaneIndex = i;
-			}
-		}
 	}
 	
 	private void sortX() {
@@ -502,62 +504,28 @@ public class Shape3 {
 	}
 
 	private void setMinsAndMaxes() {
-		setMinX();
-		setMaxX();
-		setMinY();
-		setMaxY();
-		setMinZ();
-		setMaxZ();
-	}
-	
-	private void setMinX() {
 		for(Plane p : sides) {
-			if(p.minX > minX) {
+			if(p.minX < minX) {
 				minX = p.minX;
 			}
-		}
-	}
-	
-	private void setMaxX() {
-		for(Plane p : sides) {
 			if(p.maxX > maxX) {
 				maxX = p.maxX;
 			}
-		}
-	}
-	
-	private void setMinY() {
-		for(Plane p : sides) {
 			if(p.minY < minY) {
 				minY = p.minY;
 			}
-		}
-	}
-	
-	private void setMaxY() {
-		for(Plane p : sides) {
-			if(p.maxY < maxY) {
+			if(p.maxY > maxY) {
 				maxY = p.maxY;
 			}
-		}
-	}
-	
-	private void setMinZ() {
-		for(Plane p : sides) {
 			if(p.minZ < minZ) {
 				minZ = p.minZ;
 			}
-		}
-	}
-	
-	private void setMaxZ() {
-		for(Plane p : sides) {
-			if(p.maxZ < maxZ) {
+			if(p.maxZ > maxZ) {
 				maxZ = p.maxZ;
 			}
 		}
 	}
-
+	
 	public boolean equals(Shape3 s) {
 		return s != null && idnum == s.idnum;
 	}

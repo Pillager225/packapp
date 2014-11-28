@@ -63,7 +63,7 @@ public class Plane {
 	private void setNormal() {
 		Point3 v1 = new Point3(points[1].x-points[0].x, points[1].y-points[0].y, points[1].z-points[0].z);
 		Point3 v2 = new Point3(points[points.length-1].x-points[0].x, points[points.length-1].y-points[0].y, points[points.length-1].z-points[0].z);
-		normal = Point3.getUnitVector(new Point3(v1.y*v2.z-v1.z*v2.y, -(v1.x*v2.z-v1.z*v2.x), v1.x*v2.y-v1.y*v2.x));
+		normal = Point3.getUnitVector(Point3.crossProduct(v1, v2));
 	}
 	
 	private void setConstant() {

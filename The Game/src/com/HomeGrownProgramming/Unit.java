@@ -232,7 +232,12 @@ public class Unit extends Shape3 {
 				}
 			}
 			this.dir = dir;
-			vel.x -= acc;
+			if(above != null) {
+				Point3 dirVect = Point3.getUnitVector(Point3.crossProduct(above.topPlane.normal, new Point3(0, 0, -1)));
+				vel = Point3.vectAdd(vel, Point3.getScalarMultiple(acc, dirVect));
+			} else {
+				vel.x -= acc;
+			}
 			applyFrictionX = false;
 			break;
 		case RIGHT:
@@ -245,7 +250,13 @@ public class Unit extends Shape3 {
 				}
 			}
 			this.dir = dir;
-			vel.x += acc;
+			this.dir = dir;
+			if(above != null) {
+				Point3 dirVect = Point3.getUnitVector(Point3.crossProduct(above.topPlane.normal, new Point3(0, 0, 1)));
+				vel = Point3.vectAdd(vel, Point3.getScalarMultiple(acc, dirVect));
+			} else {
+				vel.x += acc;
+			}
 			applyFrictionX = false;
 			break;
 		case IN: 

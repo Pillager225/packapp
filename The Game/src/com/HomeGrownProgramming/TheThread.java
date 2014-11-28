@@ -86,11 +86,6 @@ public class TheThread extends Thread {
 				g.fillRect(0,  0, screen.width, screen.height);
 				g.setComposite(composite);
 			}
-			for(int i = 0; i < objects.length; i++) {
-				if(objects[i].isShadow) {
-					deleteObject(objects[i]);
-				}
-			}
 		} else if(Mode == START_GAME) {
 			g.setColor(Color.CYAN);
 			g.fillRect(0, 0, screen.width, screen.height);

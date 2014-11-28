@@ -58,4 +58,8 @@ public class Point3 {
 	public static Point3 crossProduct(Point3 a, Point3 b) {
 		return new Point3(a.y*b.z-b.y*a.z, -(a.x*b.z-b.x*a.z), a.x*b.y-b.x*a.y);
 	}
+	
+	public static Point3 vectAdd(Point3 a, Point3 b) {
+		return new Point3(a.x+b.x, a.y+b.y, a.z+b.z);
+	}
 }
