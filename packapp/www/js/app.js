@@ -4,7 +4,7 @@ function menuitem(sel) {
 }
 
 function openMenu() {
-	animate_time = 2000;
+	animate_time = 1000;
 	$('#main').animate({
 			left: "+=200"
 		},animate_time,null);
@@ -17,7 +17,7 @@ function openMenu() {
 //		},animate_time,null);
 }
 function closeMenu() {
-	animate_time = 2000;
+	animate_time = 1000;
 	$('#main').animate({
 			left: "-=200"
 		},animate_time,null);
