@@ -31,6 +31,25 @@ function closeMenu() {
 	});
 }
 
+function info(type) {
+//	if(type == "std") {
+	if(type == 0) {
+		window.location.href = "stdhelp.html";
+//	} else if(type == "small") {
+	} else if(type == 1) {
+		window.location.href = "smallhelp.html";
+//	} else if(type == "flat") {
+	} else if(type == 2) {
+		window.location.href = "flathelp.html";
+//	} else if(type == "elon") {
+	} else if(type == 3) {
+		window.location.href = "elonhelp.html";
+	} else {
+		return false;
+	}
+	return true;
+}
+
 
 /*
 function openMenu() {
