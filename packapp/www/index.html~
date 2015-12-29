@@ -40,22 +40,10 @@
 	</div>
 	<div class="app">
 		<form>
-			<input type="radio" name="package" value="standard">
-			Standard 
-			<input type="image" name="standardhelp" value="standardhelp" src="img/help.png">
-			<br>
-			<input type="radio" name="package" value="small"> 
-			Small
-			<input type="image" name="smallhelp" value="smallhelp" src="img/help.png">
-			<br>
-			<input type="radio" name="package" value="flat">
-			Flat 
-			<input type="image" name="flathelp" value="flathelp" src="img/help.png">
-			<br>
-			<input type="radio" name="package" value="elongated"> 
-			Elongated 
-			<input type="image" name="elongatedhelp" value="elongatedhelp" src="img/help.png">
-			<br>
+			<input type="radio" name="package" value="standard"> Standard <br>
+			<input type="radio" name="package" value="small"> Small <br>
+			<input type="radio" name="package" value="flat"> Flat <br>
+			<input type="radio" name="package" value="elongated"> Elongated <input type="image" name="elongatedhelp" value="elongatedhelp" src="img/help.png"> <br>
 			<input type="image" name="back" value="back" src="img/back.png">
 			<input type="image" name="next" value="next" src="img/next.png">
 		</form>
